@@ -1,18 +1,22 @@
 <div class="ui large fixed menu">
   <div class="ui container">
-    <a class="active item">Home</a>
+    <%= link_to "Home", root_path, class: "active item" %>
     <a class="item">Work</a>
     <a class="item">Company</a>
     <a class="item">Careers</a>
-    <% unless user_signed_in? %>
-      <div class="right menu">
+    <div class="right menu">
+      <% if user_signed_in? %>
         <div class="item">
-          <%= link_to "Login", new_user_session_path, class: "ui button" %>
+          <%= link_to "Sign Out", destroy_user_session_path, method: :delete, class: "ui button" %>
+        </div>
+      <% else %>
+        <div class="item">
+          <%= link_to "Sign In", new_user_session_path, class: "ui button" %>
         </div>
         <div class="item">
           <%= link_to "Sign Up", new_user_registration_path, class: "ui primary button" %>
         </div>
-      </div>
-  <% end %>
+      <% end %>
+    </div>
   </div>
 </div>
