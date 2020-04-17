@@ -16,7 +16,7 @@ services:
     volumes:
       - redis-data:/data
 
-  gwp_app:
+  gwp-app:
     build: .
     env_file:
       - .env
