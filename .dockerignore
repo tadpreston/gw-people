@@ -1,0 +1,8 @@
+.git
+/tmp/*
+/log/*
+.byebug_history
+/yarn-error.log
+yarn-debug.log*
+/storage/*
+!/storage/.keep
