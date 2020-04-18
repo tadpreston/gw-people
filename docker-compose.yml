@@ -16,7 +16,15 @@ services:
     volumes:
       - redis-data:/data
 
-  gwp-app:
+  setup:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    command: "bundle exec rake db:prepare"
+
+  web:
     build: .
     env_file:
       - .env
