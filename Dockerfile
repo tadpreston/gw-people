@@ -26,5 +26,3 @@ RUN RAILS_ENV=production bundle exec rake assets:precompile
 COPY entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
-
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
