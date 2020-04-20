@@ -1,17 +1,35 @@
-apiVersion: batch/v1
-kind: Job
+---
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: setup
+  name: rails-deployment
 spec:
+  replicas: 1
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: rails-kube-app
+      tier: app
   template:
     metadata:
-      name: setup
+      name: rails
+      labels:
+        app: rails-kube-app
+        tier: app
     spec:
       containers:
-      - name: setup
+      - name: rails
         image: tadpreston/gw-people:latest
-        args: ["rake db:create && rake db:migrate"]
         env:
+        - name: RAILS_LOG_TO_STDOUT
+          value: "true"
+        - name: RAILS_SERVE_STATIC_FILES
+          value: "true"
         - name: DATABASE_NAME
           value: "gatewaypeople_production"
         - name: DATABASE_PORT
@@ -34,9 +52,16 @@ spec:
           value: "6379"
         - name: RAILS_ENV
           value: "production"
+        - name: NODE_ENV
+          value: "production"
+        - name: MAX_RAILS_THREADS
+          value: "20"
+        - name: WEB_CONCURRENCY
+          value: "3"
         - name: SECRET_KEY_BASE
           valueFrom:
             secretKeyRef:
               name: "secret-key-base"
               key: "secret-key-base"
-      restartPolicy: Never
+        ports:
+          - containerPort: 3000
