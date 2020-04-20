@@ -16,8 +16,8 @@ spec:
           value: "gatewaypeople_production"
         - name: DATABASE_PORT
           value: "5432"
-        - name: DATABASE_HOST
-          value: "postgres"
+        - name: DATABASE_URL
+          value: "postgresql://gwp_db_user:!FWZ8BChjrGNnxyoNGr8*TLf@postgres/gatewaypeople_production?pool=5&port=5432"
         - name: DATABASE_USER
           valueFrom:
             secretKeyRef:
