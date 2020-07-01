@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: rails-deployment
 spec:
-  replicas: 1
+  replicas: 3
   minReadySeconds: 5
   strategy:
     type: RollingUpdate
@@ -38,7 +38,7 @@ spec:
         - name: DATABASE_HOST
           value: "postgres"
         - name: DATABASE_URL
-          value: "postgresql://gwp_db_user:!fwz8bchjrgnnxyongr8*tlf@postgres/gatewaypeople_production?pool=5&port=5432"
+          value: "postgresql://gwp_db_user:fMVHbwTddAdJJzo2wA2zRVe9za7PDJxzYhCZuGhc@db-gatewaypeople-poc.cogswnczjbwx.us-east-2.rds.amazonaws.com/gatewaypeople_production?pool=5&port=5432"
         - name: DATABASE_USER
           valueFrom:
             secretKeyRef:
@@ -50,7 +50,7 @@ spec:
               name: "db-user-pass"
               key: "password"
         - name: REDIS_URL
-          value: "redis"
+          value: "redis-gwp-poc.b53bha.ng.0001.use2.cache.amazonaws.com"
         - name: REDIS_PORT
           value: "6379"
         - name: RAILS_ENV

@@ -8,6 +8,8 @@ metadata:
 spec:
   ports:
     - port: 3000
+      targetPort: http-server
   selector:
     app: rails-kube-app
     tier: app
+  type: LoadBalancer
