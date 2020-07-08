@@ -1,28 +1,76 @@
-FROM ruby:2.7.1
+ARG RUBY_VERSION=2.7.1
 
-MAINTAINER Tad Preston <tad.preston@gatewaystaff.com>
+#development
 
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update -qq && apt-get install -y build-essential nodejs yarn libpq-dev git
+FROM ruby:$RUBY_VERSION-alpine as development
 
-ENV RAILS_ROOT /var/www/gw-people
-RUN mkdir -p $RAILS_ROOT
+RUN apk add --no-cache \
+  git build-base yarn nodejs postgresql-dev imagemagick-dev \
+  chromium-chromedriver chromium tzdata \
+  && rm -rf /var/cache/apk/*
+
+ENV RAILS_ENV=development
+ENV RACK_ENV=development
+ENV RAILS_LOG_TO_STDOUT=true
+ENV RAILS_ROOT=/app
+ENV LANG=C.UTF-8
+ENV GEM_HOME=/bundle
+ENV BUNDLE_PATH=$GEM_HOME
+ENV BUNDLE_APP_CONFIG=$BUNDLE_PATH
+ENV BUNDLE_BIN=$BUNDLE_PATH/bin
+ENV PATH=/app/bin:$BUNDLE_BIN:$PATH
 
 WORKDIR $RAILS_ROOT
 
-COPY Gemfile Gemfile
-COPY Gemfile.lock Gemfile.lock
-RUN bundle install --binstubs
+COPY Gemfile Gemfile.lock ./
 
-COPY . .
+RUN gem install bundler \
+  && bundle install -j "$(getconf _NPROCESSORS_ONLN)"  \
+  && rm -rf $BUNDLE_PATH/cache/*.gem \
+  && find $BUNDLE_PATH/gems/ -name "*.c" -delete \
+  && find $BUNDLE_PATH/gems/ -name "*.o" -delete
 
-VOLUME ["$RAILS_ROOT/public"]
+COPY package.json yarn.lock ./
+RUN yarn install
 
-RUN yarn install --check-files
+COPY . ./
+
+EXPOSE 3000
+
+CMD ["bundle", "exec", "puma", "-Cconfig/puma.rb"]
+
+# production
+
+FROM ruby:$RUBY_VERSION-alpine as production
+
+RUN apk add --no-cache postgresql-dev imagemagick-dev nodejs yarn tzdata \
+  && rm -rf /var/cache/apk/*
+
+WORKDIR /app
+
+ENV RAILS_ENV=production
+ENV RACK_ENV=production
+ENV RAILS_LOG_TO_STDOUT=true
+ENV RAILS_SERVE_STATIC_FILES=true
+ENV RAILS_ROOT=/app
+ENV LANG=C.UTF-8
+ENV GEM_HOME=/bundle
+ENV BUNDLE_PATH=$GEM_HOME
+ENV BUNDLE_APP_CONFIG=$BUNDLE_PATH
+ENV BUNDLE_BIN=$BUNDLE_PATH/bin
+ENV PATH=/app/bin:$BUNDLE_BIN:$PATH
+ENV SECRET_KEY_BASE=blah
+
+COPY --from=development /bundle /bundle
+COPY --from=development /app ./
 
 RUN RAILS_ENV=production bundle exec rake assets:precompile
 
-COPY entrypoint.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+RUN rm -rf node_modules tmp/* log/* app/assets vendor/assets lib/assets test \ 
+  && yarn cache clean
+
+RUN apk del yarn
+
+EXPOSE 3000
+
+CMD ["bundle", "exec", "puma", "-Cconfig/puma.rb"]
