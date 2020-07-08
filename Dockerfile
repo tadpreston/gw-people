@@ -66,7 +66,7 @@ COPY --from=development /app ./
 
 RUN RAILS_ENV=production bundle exec rake assets:precompile
 
-RUN rm -rf node_modules tmp/* log/* app/assets vendor/assets lib/assets test \ 
+RUN rm -rf node_modules tmp/* log/* vendor/assets lib/assets test \
   && yarn cache clean
 
 RUN apk del yarn
