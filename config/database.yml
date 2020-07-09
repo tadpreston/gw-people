@@ -3,21 +3,18 @@ default: &default
   encoding: unicode
   timeout: 5000
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: postgres
+  host: <%= ENV.fetch("DATABASE_HOST") { "postgres" } %>
   port: 5432
+  username: <%= ENV.fetch("DATABASE_USER") { "dbname" } %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD") { "dbpassword" } %>
 
 development:
   <<: *default
-  database: gw_people_development
-  username: <%= ENV.fetch("DATABASE_USER") { "dbname" } %>
-  password: <%= ENV.fetch("DATABASE_PASSWORD") { "dbpassword" } %>
+  database: gwpeople_development
 
 test:
   <<: *default
-  database: gw_people_test
-  username: <%= ENV.fetch("DATABASE_USER") { "dbname" } %>
-  password: <%= ENV.fetch("DATABASE_PASSWORD") { "dbpassword" } %>
+  database: gwpeople_test
 
 production:
-  <<: *default
   url: <%= ENV['DATABASE_URL'] %>

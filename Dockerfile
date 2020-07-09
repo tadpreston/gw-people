@@ -37,8 +37,6 @@ COPY . ./
 
 EXPOSE 3000
 
-CMD ["bundle", "exec", "puma", "-Cconfig/puma.rb"]
-
 # production
 
 FROM ruby:$RUBY_VERSION-alpine as production
@@ -72,5 +70,3 @@ RUN rm -rf node_modules tmp/* log/* vendor/assets lib/assets test \
 RUN apk del yarn
 
 EXPOSE 3000
-
-CMD ["bundle", "exec", "puma", "-Cconfig/puma.rb"]

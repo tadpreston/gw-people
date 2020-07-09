@@ -17,25 +17,25 @@ services:
       - redis-data:/data
 
   setup:
-    build: .
+    image: tadpreston/gwp-app-dev:latest
     env_file:
       - .env
     depends_on:
       - postgres
-    command: "rake db:prepare"
+    command: "bundle exec rake db:prepare"
 
   web:
-    build: .
+    image: tadpreston/gwp-app-dev:latest
     env_file:
       - .env
     volumes:
-      - .:/var/www/gw-people
+      - .:/app
     ports:
       - '3000:3000'
     depends_on:
       - postgres
       - redis
-    command: "puma -C config/puma.rb"
+    command: "bundle exec puma -C config/puma.rb"
 
 volumes:
   db-data:
