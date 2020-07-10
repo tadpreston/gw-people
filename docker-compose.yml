@@ -44,6 +44,7 @@ services:
     volumes:
       - .:/app
     depends_on:
+      - postgres
       - redis
     command: "bundle exec sidekiq"
 
