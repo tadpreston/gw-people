@@ -37,6 +37,16 @@ services:
       - redis
     command: "bundle exec puma -C config/puma.rb"
 
+  sidekiq:
+    image: tadpreston/gwp-app-dev:latest
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    command: "bundle exec sidekiq"
+
 volumes:
   db-data:
   redis-data:
