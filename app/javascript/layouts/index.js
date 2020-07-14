@@ -19,4 +19,9 @@ $(() => {
       console.log("error logging out");
     });
   });
+
+  $(".item.profile").click((e) => {
+    let URL = $(e.target).data('target');
+    window.location.href = URL;
+  });
 });
