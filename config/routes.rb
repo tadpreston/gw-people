@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
   get "/profile", to: "profiles#edit"
   patch "/profile", to: "profiles#update"
+  put "/profile", to: "profiles#update"
 
   root to: "home#index"
 end

@@ -14,6 +14,9 @@ development:
 
 test:
   <<: *default
+  host: localhost
+  username: gwpeople_user
+  password: nov8ordie
   database: gwpeople_test
 
 production:
